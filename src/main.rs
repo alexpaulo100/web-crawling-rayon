@@ -1,9 +1,9 @@
+use csv::Writer;
 use rayon::prelude::*;
+use regex::Regex;
 use wikipedia::http::default::Client;
 use wikipedia::Page;
 use wikipedia::Wikipedia;
-use csv::Writer;
-use regex::Regex;
 
 #[derive(Clone)]
 struct ProcessedPage {
@@ -25,8 +25,12 @@ const PAGES: [&str; 10] = [
 ];
 
 fn process_page(page: &Page<Client>) -> ProcessedPage {
-    let title = page.get_title().unwrap_or_else(|_| "Título não encontrado".to_string());
-    let content = page.get_content().unwrap_or_else(|_| "Conteúdo não encontrado".to_string());
+    let title = page
+        .get_title()
+        .unwrap_or_else(|_| "Título não encontrado".to_string());
+    let content = page
+        .get_content()
+        .unwrap_or_else(|_| "Conteúdo não encontrado".to_string());
 
     ProcessedPage {
         title,
@@ -65,7 +69,6 @@ fn main() {
     println!("Number of threads: {}", rayon::current_num_threads());
 
     save_to_csv(processed_pages.clone());
-
 }
 
 fn get_first_sentence(content: &str) -> String {
@@ -76,15 +79,20 @@ fn get_first_sentence(content: &str) -> String {
     }
 }
 
-
 fn save_to_csv(processed_pages: Vec<ProcessedPage>) {
     let mut wtr = Writer::from_path("jogadores.csv").unwrap();
 
     // Cabeçalhos do CSV
-    wtr.write_record(["Title", "First Sentence", "Word Count"]).unwrap();
+    wtr.write_record(["Title", "First Sentence", "Word Count"])
+        .unwrap();
 
     for page in processed_pages {
-        wtr.write_record(&[page.title, get_first_sentence(&page.data), page.data.split_whitespace().count().to_string()]).unwrap();
+        wtr.write_record(&[
+            page.title,
+            get_first_sentence(&page.data),
+            page.data.split_whitespace().count().to_string(),
+        ])
+        .unwrap();
     }
 
     wtr.flush().unwrap();
