@@ -1,0 +1,13 @@
+[package]
+name = "web-crawling-raion"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rayon = "1.10"
+wikipedia = "0.5.0"
+csv = "1.3"
+regex = "1"
+
+
+
